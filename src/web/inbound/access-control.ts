@@ -67,8 +67,11 @@ export async function checkInboundAccessControl(params: {
     dmPolicy,
   });
   // Without user config, default to self-only DM access so the owner can talk to themselves.
+  // However, for "allowlist" policy, keep strict blocking when no allowFrom is configured.
   const defaultAllowFrom =
-    configuredAllowFrom.length === 0 && params.selfE164 ? [params.selfE164] : [];
+    dmPolicy !== "allowlist" && configuredAllowFrom.length === 0 && params.selfE164
+      ? [params.selfE164]
+      : [];
   const dmAllowFrom = configuredAllowFrom.length > 0 ? configuredAllowFrom : defaultAllowFrom;
   const groupAllowFrom =
     account.groupAllowFrom ?? (configuredAllowFrom.length > 0 ? configuredAllowFrom : undefined);
